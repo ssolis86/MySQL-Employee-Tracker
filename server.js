@@ -55,11 +55,27 @@ const  run = () => {
 };
 
 runAddDep = () => {
-    console.log('runAddDep');
-
-
-
-    run();
+    function initiate() {
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'departmentName',
+                message: 'What is the name of the new department?'
+            }
+        ])
+        .then((result) => {
+            var departmentName = result.departmentName;
+            var query = `INSERT INTO department (name) Values ('${departmentName}'); `
+            connection.query(query, 
+                function (error, results) {
+                    if (error) throw error;
+                        console.log('DEPARTMENT ADDED');
+                }
+            )
+            run();
+        }) 
+    }
+    initiate();
 }
 
 runAddRole = () => {
