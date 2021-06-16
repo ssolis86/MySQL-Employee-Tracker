@@ -91,7 +91,13 @@ runViewRole = () => {
 
 runViewEmp = () => {
     console.log('runViewEmp');
+        connection.query("SELECT employee.id, employee.first_name, employee.last_name, employee_role.title, department.name as department_name, M.first_name as Manager_Name, employee_role.salary FROM employee INNER JOIN employee_role ON employee.role_id=employee_role.id INNER JOIN department ON employee_role.department_id=department.id INNER JOIN employee M ON employee.manager_id=M.id;", function (error, results, fields) {
+        if (error) throw error;
+        console.log('');
+        console.table(results);
+        console.log('');
 
+    })
 
     run();
 }
