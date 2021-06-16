@@ -48,6 +48,8 @@ const  run = () => {
             case "UPDATE EMPLOYEE ROLES":
                 runUpdEmpRls();
                 break;
+            default:
+                break;
         }
     });
 };
@@ -69,10 +71,56 @@ runAddRole = () => {
 }
 
 runAddEmp = () => {
-    console.log('runAddEmp');
-
-
-    run();
+    
+    function initiate() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'firstName',
+            message: 'Enter the employees first name: ',
+        },
+        {
+            type: 'input',
+            name: 'lastName',
+            message: 'Enter the employees last name: ',
+        },
+        {
+            type: 'list',
+            name: 'position',
+            message: 'What is the employees position?: ',
+            choices: ['Office Manager', 'Secretary', 'Accountant', 'Sales Person', 'Attorney']
+        },
+        {
+            type: 'list',
+            name: 'manager',
+            message: "Who is this employee's manager?",
+            choices: ['Stephen']
+        }
+    ]).then((resp) => {
+        let positionId;
+        if (resp.position === "Office Manager") {
+            positionId = 1;
+        } else if (resp.position === "Secretary") {
+            positionId = 2
+        } else if (resp.position === "Accountant") {
+            positionId = 3;
+        } else if (resp.position === "Sales Person") {
+            positionId = 4;
+        } else {
+            positionId = 5;
+        }
+        let managerId = 1;
+        var query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) Values ('${resp.firstName}', '${resp.lastName}', ${positionId}, ${managerId}); `
+        console.log(query);
+        connection.query(query, 
+            function (error, results) {
+                if (error) throw error;
+                    console.log('EMPLOYEE ADDED');
+            }
+        )
+        run();
+    })};
+    initiate();
 }
 
 runViewDep = () => {
