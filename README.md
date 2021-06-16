@@ -11,10 +11,6 @@
 
  *  [Github_Repo](#Github_Repo)
 
-    
-
-
-
 ## Description
     
 This is a command-line application that allows users to 
@@ -32,4 +28,4 @@ Stephen Solis
 
 ## Github-Repo
 
-https://ssolis86.github.io/weather-dashboard/
+[Github Repository](https://github.com/ssolis86/MySQL-Employee-Tracker)
