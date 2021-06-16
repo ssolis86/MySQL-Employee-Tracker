@@ -79,63 +79,109 @@ runAddDep = () => {
 }
 
 runAddRole = () => {
-    console.log('runAddRole');
-
-
-
-    run();
+    function initiate() {
+        let getDepartments = `SELECT * FROM department; `
+        connection.query(getDepartments, 
+            function (error, results) {
+                if (error) throw error;
+                    let departmentNames = [];
+                    for(var i = 0; i < results.length; i++) {
+                        departmentNames.push(results[i].name);
+                    }
+                    inquirer.prompt([
+                        {
+                            type: 'input',
+                            name: 'roleTitle',
+                            message: 'Enter the role title ',
+                        },
+                        {
+                            type: 'input',
+                            name: 'salary',
+                            message: 'Enter the roles salary: ',
+                        },
+                        {
+                            type: 'list',
+                            name: 'position',
+                            message: 'What is the department?: ',
+                            choices: departmentNames
+                        }
+                    ]).then((resp) => {
+                        let departmentId;
+                        for(var i = 0; i < results.length; i++) {
+                            if (results[i].name == resp.position) {
+                                departmentId = results[i].id;
+                                break;
+                            }
+                        }
+                        let insertQuery = `INSERT into employee_role (title, salary, department_id) VALUES ('${resp.roleTitle}', '${resp.salary}', ${departmentId}) `
+                        connection.query(insertQuery, 
+                            function (error, results) {
+                                if (error) throw error;
+                                    console.log("ROLE ADDED")
+                            }
+                        )
+                        run();
+                    })
+                }
+        )
+    }
+    initiate();
 }
 
 runAddEmp = () => {
     
     function initiate() {
-    inquirer.prompt([
-        {
-            type: 'input',
-            name: 'firstName',
-            message: 'Enter the employees first name: ',
-        },
-        {
-            type: 'input',
-            name: 'lastName',
-            message: 'Enter the employees last name: ',
-        },
-        {
-            type: 'list',
-            name: 'position',
-            message: 'What is the employees position?: ',
-            choices: ['Office Manager', 'Secretary', 'Accountant', 'Sales Person', 'Attorney']
-        },
-        {
-            type: 'list',
-            name: 'manager',
-            message: "Who is this employee's manager?",
-            choices: ['Stephen']
-        }
-    ]).then((resp) => {
-        let positionId;
-        if (resp.position === "Office Manager") {
-            positionId = 1;
-        } else if (resp.position === "Secretary") {
-            positionId = 2
-        } else if (resp.position === "Accountant") {
-            positionId = 3;
-        } else if (resp.position === "Sales Person") {
-            positionId = 4;
-        } else {
-            positionId = 5;
-        }
-        let managerId = 1;
-        var query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) Values ('${resp.firstName}', '${resp.lastName}', ${positionId}, ${managerId}); `
-        console.log(query);
-        connection.query(query, 
+        let getRoles = `SELECT * FROM employee_role; `
+        connection.query(getRoles, 
             function (error, results) {
-                if (error) throw error;
-                    console.log('EMPLOYEE ADDED');
+                let roles = [];
+                for(var i = 0; i < results.length; i++) {
+                    roles.push(results[i].title);
+                }
+                inquirer.prompt([
+                    {
+                        type: 'input',
+                        name: 'firstName',
+                        message: 'Enter the employees first name: ',
+                    },
+                    {
+                        type: 'input',
+                        name: 'lastName',
+                        message: 'Enter the employees last name: ',
+                    },
+                    {
+                        type: 'list',
+                        name: 'position',
+                        message: 'What is the employees position?: ',
+                        choices: roles
+                    },
+                    {
+                        type: 'list',
+                        name: 'manager',
+                        message: "Who is this employee's manager?",
+                        choices: ['Stephen']
+                    }
+                ]).then((resp) => {
+                    let positionId;
+                        for(var i = 0; i < results.length; i++) {
+                            if (results[i].title == resp.position) {
+                                positionId = results[i].id;
+                                break;
+                            }
+                        }
+                    let managerId = 1;
+                    var query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) Values ('${resp.firstName}', '${resp.lastName}', ${positionId}, ${managerId}); `
+                    connection.query(query, 
+                        function (error, results) {
+                            if (error) throw error;
+                                console.log('EMPLOYEE ADDED');
+                        }
+                    )
+                    run();
+                })
             }
         )
-        run();
-    })};
+    }
     initiate();
 }
 
@@ -146,9 +192,9 @@ runViewDep = () => {
                     console.log('');
                     console.table(results);
                     console.log('');
+                    run();
             }
         )
-    run();
 }
 
 runViewRole = () => {
@@ -158,9 +204,10 @@ runViewRole = () => {
                     console.log('');
                     console.table(results);
                     console.log('');
+                    run();
             }
         )
-    run();
+    
 }
 
 runViewEmp = () => {
@@ -171,14 +218,82 @@ runViewEmp = () => {
                     console.log('');
                     console.table(results);
                     console.log('');
+                    run();
             }
         )
-
-    run();
 }
 
 runUpdEmpRls = () => {
-    
+    function initiate() {
+        let roles = "SELECT * from employee_role;"
 
-    run();
+        connection.query(roles, 
+            function (error, results) {
+                if (error) throw error;
+                let roles = [];
+                for(var i = 0; i < results.length; i++) {
+                    roles.push(results[i].title);
+                }
+                connection.query("SELECT * FROM department;", 
+                    function (error, departmentResults, fields) {
+                        if (error) throw error;
+                            let departments = [];
+                            for(var i = 0; i < departmentResults.length; i++) {
+                                departments.push(departmentResults[i].name);
+                            }
+                            
+                            inquirer.prompt([
+                                {
+                                    type: 'list',
+                                    name: 'position',
+                                    message: 'What Role would you like to change?',
+                                    choices: roles
+                                },
+                                {
+                                    type: 'input',
+                                    name: 'newRoleTitle',
+                                    message: 'Enter the new title for the role.'
+                                },
+                                {
+                                    type: 'input',
+                                    name: 'salary',
+                                    message: 'Enter a new salary for the role.'
+                                },
+                                {
+                                    type: 'list',
+                                    name: 'newRoleDepartment',
+                                    message: 'Choose a new department.',
+                                    choices: departments
+                                }
+                            
+                            ]).then((resp) => {
+                                let modifiedRoleId;
+                                let newDepId;
+                                for(var i = 0; i < roles.length; i++) {
+                                    if (results[i].title == resp.position) {
+                                        modifiedRoleId = results[i].id;
+                                        break;
+                                    }
+                                }
+
+                                for(var i = 0; i < departments.length; i++) {
+                                    if (departmentResults[i].name == resp.newRoleDepartment) {
+                                        newDepId = departmentResults[i].id;
+                                        break;
+                                    }
+                                }
+                                let updateQueryString = `UPDATE employee_role SET title='${resp.newRoleTitle}',salary=${resp.salary},department_id=${newDepId} WHERE id=${modifiedRoleId};`
+                                    connection.query(updateQueryString, 
+                                        function (error, departmentResults, fields) {
+                                            if (error) throw error;
+                                            console.log('The employee role has been modified!');
+                                                run();
+                                        })
+                                    })
+                    }
+                )
+            }
+        )
+    }
+    initiate();
 }
