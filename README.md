@@ -29,3 +29,10 @@ Stephen Solis
 ## Github-Repo
 
 [Github Repository](https://github.com/ssolis86/MySQL-Employee-Tracker)
+
+## Recorded Video
+
+![Demo](assets/video.gif)
+
+### Link to video
+[Video Link](https://drive.google.com/file/d/1B1p1T5fEfFvnc_44DHJNyErkDaix9XsT/view)
